@@ -3,7 +3,7 @@
 
 #include "verilated.h"
 #include "Vcosim_bfm_axi_dpi.h"
-#include "../cosim_bfm_api.h"
+#include "../lib_bfm/c/cosim_bfm_api.h"
 
 //======================
 

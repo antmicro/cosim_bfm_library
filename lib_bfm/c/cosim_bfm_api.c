@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "cosim_ipc.h"
+#include "../../lib_ipc/src/cosim_ipc.h"
 #include "cosim_bfm_packet.h"
 #include "cosim_bfm_api.h"
 
