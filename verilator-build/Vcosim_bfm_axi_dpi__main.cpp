@@ -16,10 +16,6 @@ int main(int argc, char** argv, char**) {
     // Construct the Verilated model, from Vtop.h generated from Verilating
     const std::unique_ptr<Vcosim_bfm_axi_dpi> topp{new Vcosim_bfm_axi_dpi{contextp.get()}};
 
-    bfm_set_verbose(2);
-    bfm_open(0);
-    bfm_barrier(0);
-
     // Simulate until $finish
     while (!contextp->gotFinish()) {
         // Evaluate model
