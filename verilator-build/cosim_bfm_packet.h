@@ -20,11 +20,11 @@ extern "C" {
 //------------------------------------------------------------------------------
 // data[...] contains 'cmd_size*cmd_length' bytes
 typedef struct {
-  unsigned int cmd_type;   // RD-REQ(1), WR-REQ(2), RD-RSP(5), WR-RSP(6), TERM-REQ(8)
-  unsigned int cmd_size;   // num of bytes in a beat
-  unsigned int cmd_length; // num of beats, i.e., burst length
-  unsigned int cmd_ack;    // ERR(0), OK(1)
-  unsigned int attr;       // user-specified attribute
+  uint32_t cmd_type;   // RD-REQ(1), WR-REQ(2), RD-RSP(5), WR-RSP(6), TERM-REQ(8)
+  uint32_t cmd_size;   // num of bytes in a beat
+  uint32_t cmd_length; // num of beats, i.e., burst length
+  uint32_t cmd_ack;    // ERR(0), OK(1)
+  uint32_t attr;       // user-specified attribute
   uint32_t     trans_id;   // transaction identification (for multiple outstanding case)
   uint32_t     addr;
   uint8_t      data[COSIM_DATA_BNUM]; // byte-stream up to 4*256 bytes

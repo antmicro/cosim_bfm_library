@@ -13,7 +13,7 @@
 #include "cosim_bfm_api.h"
 
 const char program[]="test";
-const unsigned int version=0x20210810;
+const uint32_t version=0x20210810;
 
 int verbose = 0;
 int cid = 0;

@@ -21,27 +21,27 @@ extern int bfm_get_verbose();
 //------------------------------------------------------------------------------
 extern int bfm_write( uint32_t     addr
                     , uint8_t     *data
-                    , unsigned int sz
-                    , unsigned int length);
+                    , uint32_t sz
+                    , uint32_t length);
 extern int bfm_read ( uint32_t     addr
                     , uint8_t     *data
-                    , unsigned int sz
-                    , unsigned int length);
+                    , uint32_t sz
+                    , uint32_t length);
 
 extern int bfm_write_core( int          cid       // IPC channel ID
                          , uint32_t     trans_id  // transaction ID
                          , uint32_t     addr      // address to write
                          , uint8_t     *data      // data buffer
-                         , unsigned int sz       // num of bytes for each beat
-                         , unsigned int length   // length of burst, i.e., num of beats
-                         , unsigned int attr);   // user defined attribute
+                         , uint32_t sz       // num of bytes for each beat
+                         , uint32_t length   // length of burst, i.e., num of beats
+                         , uint32_t attr);   // user defined attribute
 extern int bfm_read_core ( int          cid      // IPC channel ID
                          , uint32_t     trans_id // transaction ID
                          , uint32_t     addr     // address to read
                          , uint8_t     *data     // data buffer
-                         , unsigned int sz       // num of bytes for each beat
-                         , unsigned int length   // length of burst, i.e., num of beats
-                         , unsigned int attr);   // user defined attribute
+                         , uint32_t sz       // num of bytes for each beat
+                         , uint32_t length   // length of burst, i.e., num of beats
+                         , uint32_t attr);   // user defined attribute
 
 //------------------------------------------------------------------------------
 // special API for BFM master
