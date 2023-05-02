@@ -28,7 +28,10 @@ static int m_cid_max = MAX_NUM_CHAN; // see MAX_NUM_CHAN @ ipc_lib/ipc_lib.h
 #define dpi_printf(format, ...) printf("%s(): " format, __func__, ##__VA_ARGS__)
 
 //------------------------------------------------------------------------------
-int dpi_flush(void) { fflush(stdout); }
+int dpi_flush(void) {
+    return 0; // dummy return value
+    // fflush(stdout); // causes a segfault on WIN
+}
 
 //------------------------------------------------------------------------------
 void cosim_control(int operation) {
