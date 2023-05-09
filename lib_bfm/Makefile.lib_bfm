@@ -10,10 +10,8 @@ MAKEFILE = Makefile
 #-------------------------------------------------------------------------------
 DIR_BFM     = .
 DIR_C       = ${DIR_BFM}/c
-DIR_VERILOG = ${DIR_BFM}/verilog
 DIR_IPC     = ../lib_ipc
 LIB_BFM     = cosim_bfm
-LIB_VPI_BFM = cosim_vpi_bfm
 #-------------------------------------------------------------------------------
 DIR_OBJ   = obj
 DUMMY    := $(shell [ -d $(DIR_OBJ) ] || mkdir $(DIR_OBJ) )
@@ -22,33 +20,30 @@ DUMMY    := $(shell [ -d $(DIR_OBJ) ] || mkdir $(DIR_OBJ) )
 all: compile prepare_defines compile_link
 
 compile_link:
-	for F in ${DIR_BFM}/c/cosim_bfm_vpi.c ${DIR_IPC}/src/cosim_ipc.c; do\
-		gcc -c -DRIGOR -DCOSIM_VPI -fPIC\
-			-Ic -I$(DIR_IPC)/src -I${INCLUDES}\
-			$$F -o $(DIR_OBJ)/$$(basename $$F .c).o;\
+	echo COMPILE_LINK
+	for F in ${DIR_IPC}/src/cosim_ipc.c ${DIR_BFM}/c/cosim_bfm_dpi.c; do\
+		gcc -c -DRIGOR -DCOSIM_DPI -fPIC -Ic -I$(DIR_IPC)/src $$F -o $(DIR_OBJ)/$$(basename $$F .c).o;\
 	done
-	gcc -shared -o $(LIB_VPI_BFM).vpi\
-		${DIR_OBJ}/cosim_bfm_vpi.o\
-		${DIR_OBJ}/cosim_ipc.o\
-		-L/usr/local/lib
 
 prepare_defines:
+	echo PREPARE_DEFINES
 	sed -e 's/^#define/`define/'\
 		-e 's/^#if/`if/' -e 's/^#endif/`endif/'\
 		-e 's/0x/\x27h/g'\
 		c/cosim_bfm_defines.h > verilog/cosim_bfm_defines.vh
 
 #-------------------------------------------------------------------------------
-INCS        := -Ic -I$(DIR_IPC)/src -I$(XILINX_VIVADO)/data/xsim/include
+INCS        := -Ic -I$(DIR_IPC)/src
 SRCS        := $(DIR_BFM)/c/cosim_bfm_api.c\
                $(DIR_IPC)/src/cosim_ipc.c
 OBJS        := $(shell echo $(notdir $(SRCS)) | sed -e 's/\.c/\.o/g')
 TARGET_LIBS := lib$(LIB_BFM).a lib$(LIB_BFM).so
 
 compile:
+	echo COMPILE
 	echo $(OBJS)
 	for F in $(SRCS); do\
-		gcc -c -m64 -fPIC -DRIGOR -Dxsim $(INCS) $$F -o $(DIR_OBJ)/$$(basename $$F .c).o;\
+		gcc -c -m64 -fPIC $(INCS) $$F -o $(DIR_OBJ)/$$(basename $$F .c).o;\
 	done
 	gcc -shared -o lib$(LIB_BFM).so $(addprefix $(DIR_OBJ)/,$(OBJS))
 	ar crUu lib$(LIB_BFM).a $(addprefix $(DIR_OBJ)/,$(OBJS))
@@ -61,18 +56,14 @@ DIR_INSTALL        ?= ..
 DIR_INSTALL_INC     = $(DIR_INSTALL)/include
 DIR_INSTALL_LIB     = $(DIR_INSTALL)/lib/${PLATFORM}_${MACHINE}
 DIR_INSTALL_BFMS    = $(DIR_INSTALL_INC)/verilog
-DIR_INSTALL_PYTHON  = $(DIR_INSTALL_INC)/python
 TARGET_HDRS         = cosim_bfm_api.h
-TARGET_VPI_LIBS     = ${LIB_VPI_BFM}.vpi
 TARGET_BFMS         = cosim_bfm_axi_core.v\
                       cosim_bfm_axi_dpi.sv\
                       cosim_bfm_axi_tasks.v\
-                      cosim_bfm_axi_vpi.v\
                       cosim_bfm_defines.vh
-TARGET_PYTHON       = cosim_bfm.py __init__.py
 
 .PHONY: install
-install: install_header install_libs install_bfms install_python
+install: install_header install_libs install_bfms
 
 install_header:
 	@for F in $(addprefix c/,$(TARGET_HDRS)); do\
@@ -108,21 +99,6 @@ install_libs:
 	        echo "Failed to install $(DIR_INSTALL_LIB)/{$(TARGET_LIB)}.";\
 		exit 1;\
 	fi
-	@for F in $(TARGET_VPI_LIBS); do\
-		if [ ! -f $$F ] ; then \
-			echo "Not found $$F";\
-			exit 1;\
-		fi;\
-	done
-	@if [ ! -d ${DIR_INSTALL_LIB} ]; then mkdir -p ${DIR_INSTALL_LIB}; fi
-	@install $(TARGET_VPI_LIBS) $(DIR_INSTALL_LIB) > /dev/null 2>&1
-	@if [ $$? -eq 0 ]; then\
-	        rm -f $(TARGET_VPI_LIBS);\
-	        echo "Success on installing $(DIR_INSTALL_LIB)/{$(TARGET_VPI_LIBS)}.";\
-	else\
-	        echo "Failed to install $(DIR_INSTALL_LIB)/{$(TARGET_VPI_LIB)}.";\
-		exit 1;\
-	fi
 
 install_bfms:
 	@for F in $(addprefix verilog/,$(TARGET_BFMS)); do\
@@ -137,22 +113,6 @@ install_bfms:
 	        echo "Success on installing $(addprefix $(DIR_INSTALL_BFMS)/,$(TARGET_BFMS)).";\
 	else\
 	        echo "Failed to install $(addprefix $(DIR_INSTALL_BFMS)/,$(TARGET_BFMS)).";\
-		exit 1;\
-	fi
-
-install_python:
-	@for F in $(addprefix python/,$(TARGET_PYTHON)); do\
-		if [ ! -f $$F ] ; then \
-				echo "Not found $$F";\
-				exit 1;\
-		fi;\
-	done
-	@if [ ! -d ${DIR_INSTALL_PYTHON} ]; then mkdir -p ${DIR_INSTALL_PYTHON}; fi
-	@install $(addprefix python/,$(TARGET_PYTHON)) $(DIR_INSTALL_PYTHON) > /dev/null 2>&1
-	@if [ $$? -eq 0 ]; then\
-	        echo "Success on installing $(addprefix $(DIR_INSTALL_PYTHON)/,$(TARGET_PYTHON)).";\
-	else\
-	        echo "Failed to install $(addprefix $(DIR_INSTALL_PYTHON)/,$(TARGET_PYTHON)).";\
 		exit 1;\
 	fi
 
@@ -171,16 +131,12 @@ clean:
 .PHONY: cleanup clobber
 cleanup clobber: clean
 	/bin/rm -f $(TARGET_LIBS)
-	/bin/rm -f $(LIB_VPI_BFM).vpi
 	/bin/rm -fr $(DIR_INSTALL_LIB)
 
 .PHONY: cleanupall distclean
 cleanupall distclean: cleanup
 	/bin/rm -f   verilog/cosim_bfm_defines.vh
 	/bin/rm -fr  $(DIR_INSTALL)/lib
-ifneq ( $(abspath python), $(abspath $(DIR_INSTALL_PYTHON)) )
-	/bin/rm -fr $(DIR_INSTALL_PYTHON)
-endif
 ifneq ( $(abspath verilog), $(abspath $(DIR_INSTALL_BFMS)) )
 	/bin/rm -fr $(DIR_INSTALL_BFMS)
 endif

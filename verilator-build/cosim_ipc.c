@@ -4,27 +4,25 @@
 //----------------------------------------------------------------------------
 // cosim_ipc.c
 //----------------------------------------------------------------------------
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdarg.h>
+#include <signal.h>
+#include <assert.h>
+#include <unistd.h>
+#include <string.h>
+#include <errno.h>
+#include <inttypes.h>
+#include <sys/types.h>
+
 #if defined(WIN32) // cygwin uses this
 #	include <windows.h>
-#	include <stdio.h>
 #	include <io.h>
-#	include <assert.h>
-#	include <signal.h>
-#	include <inttypes.h>
 #else
-#	include <stdio.h>
-#	include <stdlib.h>
-#	include <stdarg.h>
-#	include <signal.h>
-#	include <assert.h>
-#	include <unistd.h>
-#	include <string.h>
-#	include <errno.h>
-#	include <inttypes.h>
-#	include <sys/types.h>
 #	include <sys/ipc.h>
 #	include <sys/msg.h>
 #endif
+
 #include "cosim_ipc.h"
 
 //----------------------------------------------------------------------------
@@ -227,7 +225,7 @@ chn_send (int chan_id, int len, void *buf)
 {
     if (chan_id>=MAX_NUM_CHAN) return -1;
     if (chan_handle[chan_id]==(void*)-1L) return -1;
-    return _chn_send (chan_id, len, buf, 0);
+    return _chn_send (chan_id, len, (char*)buf, 0);
 }
 
 //----------------------------------------------------------------------------
@@ -239,7 +237,7 @@ chn_send_nb (int chan_id, int len, void *buf)
 {
     if (chan_id>=MAX_NUM_CHAN) return -1;
     if (chan_handle[chan_id]==(void*)-1L) return -1;
-    return _chn_send (chan_id, len, buf, 1);
+    return _chn_send (chan_id, len, (char*)buf, 1);
 }
 
 //----------------------------------------------------------------------------

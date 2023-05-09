@@ -4,27 +4,25 @@
 //----------------------------------------------------------------------------
 // cosim_ipc.c
 //----------------------------------------------------------------------------
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdarg.h>
+#include <signal.h>
+#include <assert.h>
+#include <unistd.h>
+#include <string.h>
+#include <errno.h>
+#include <inttypes.h>
+#include <sys/types.h>
+
 #if defined(WIN32) // cygwin uses this
 #	include <windows.h>
-#	include <stdio.h>
 #	include <io.h>
-#	include <assert.h>
-#	include <signal.h>
-#	include <inttypes.h>
 #else
-#	include <stdio.h>
-#	include <stdlib.h>
-#	include <stdarg.h>
-#	include <signal.h>
-#	include <assert.h>
-#	include <unistd.h>
-#	include <string.h>
-#	include <errno.h>
-#	include <inttypes.h>
-#	include <sys/types.h>
 #	include <sys/ipc.h>
 #	include <sys/msg.h>
 #endif
+
 #include "cosim_ipc.h"
 
 //----------------------------------------------------------------------------

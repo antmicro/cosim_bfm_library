@@ -388,7 +388,7 @@ _chn_change_mode(int chan_id, int nbon)
 // return the num of bytes sent that will be >=0 on successful.
 // return < 0 on failure.
 static int 
-_chn_send (int chan_id, int len, char buf[], int nbon) 
+_chn_send (int chan_id, int len, void *buf, int nbon) 
 {
     HANDLE hPipe = (HANDLE)chan_handle[chan_id];
     DWORD cbBytes = 0;

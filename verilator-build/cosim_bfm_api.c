@@ -26,7 +26,11 @@ int bfm_open(int cid)
 {
     if ((cid<0)||(cid>MAX_NUM_CHAN)) return -1;
     m_cid = cid;
+#ifdef HOST
+    if (chn_create_connect(cid, CHAN_HOST)<0) return -1;
+#else
     if (chn_create_connect(cid, CHAN_TARGET)<0) return -1;
+#endif
     return 0;
 }
 
@@ -94,8 +98,8 @@ int bfm_get_verbose(void)
 //   +-- sz-bytes
 int bfm_write( uint32_t addr
              , uint8_t* data
-             , unsigned int sz
-             , unsigned int length)
+             , uint32_t sz
+             , uint32_t length)
 {
     // use channel ID previously opened by bfm_open(cid)
     if (addr%sz) PRINTF("un-aligned access.\n");
@@ -114,9 +118,9 @@ int bfm_write_core( int      cid        // IPC channel ID
                   , uint32_t trans_id   // transaction ID
                   , uint32_t addr       // address to write
                   , uint8_t* data       // data buffer
-                  , unsigned int sz     // num of bytes for each beat
-                  , unsigned int length // length of burst, i.e., num of beats
-                  , unsigned int attr)  // user defined attribute
+                  , uint32_t sz     // num of bytes for each beat
+                  , uint32_t length // length of burst, i.e., num of beats
+                  , uint32_t attr)  // user defined attribute
 {
     #if defined(ROGOR)
     if ((sz*length)>COSIM_DATA_BNUM) PRINTF("data size exceeds.\n");
@@ -187,8 +191,8 @@ int bfm_write_core( int      cid        // IPC channel ID
 //   +-- sz-bytes
 int bfm_read ( uint32_t addr
              , uint8_t* data
-             , unsigned int sz
-             , unsigned int length)
+             , uint32_t sz
+             , uint32_t length)
 {
     // use channel ID previously opened by bfm_open(cid)
     if (addr%sz) PRINTF("un-aligned access.\n");
@@ -207,9 +211,9 @@ int bfm_read_core ( int      cid        // IPC channel ID
                   , uint32_t trans_id   // transaction ID
                   , uint32_t addr       // address to read
                   , uint8_t* data       // data buffer
-                  , unsigned int sz     // num of bytes for each beat
-                  , unsigned int length // length of burst, i.e., num of beats
-                  , unsigned int attr)  // user defined attribute
+                  , uint32_t sz     // num of bytes for each beat
+                  , uint32_t length // length of burst, i.e., num of beats
+                  , uint32_t attr)  // user defined attribute
 {
     #if defined(ROGOR)
     if ((sz*length)>COSIM_DATA_BNUM) PRINTF("data size exceeds.\n");
